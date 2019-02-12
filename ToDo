@@ -1,0 +1,9 @@
+per Button in den AP Modus zum einstellen
+per webIf variablen (messungsinterval) einstellen
+cpu frequenz einstellen
+PinBelegung als Variablel (Python vs JSON)
+
+Kontrolle:
+    CPU frequenz nach deepsleep
+    speichern der Messwerte auf SD und übermittlung alle 4 - 6 Stunden
+

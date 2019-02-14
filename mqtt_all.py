@@ -36,7 +36,8 @@ def hiveeyes_publish(t, h, w):
     measurement = {
                 'temperature0': t,
                 'humidity': h,
-                'weight': w
+                'weightavg': wa,
+                'weightlp': wl,
             }
 
     # Serialize data as JSON
@@ -48,7 +49,7 @@ def hiveeyes_publish(t, h, w):
     client_hiveeyes.disconnect()
 
 
-def thingspeak_publish(t, h, w):
+def thingspeak_publish(t, h, wa, wl):
     #
     # connect to Thingspeak MQTT broker
     # connection uses unsecure TCP (port 1883)
@@ -64,18 +65,19 @@ def thingspeak_publish(t, h, w):
                         ssl=False)
     thingspeak_client.connect()
     credentials = bytes("channels/{:s}/publish/{:s}".format(thingspeakChannelId, thingspeakChannelWriteApiKey), 'utf-8')
-    thingspeak_payload = "field1="+str(t)+"&field2="+str(h)+"&field3="+str(w)
+    thingspeak_payload = "field1="+str(t)+"&field2="+str(h)+"&field3="+str(wa)+"&field4="+str(wl)
     thingspeak_client.publish(credentials, thingspeak_payload)
     thingspeak_client.disconnect()
 
 while True:
     sensor.measure()   # Poll sensor
-    t, h, w = sensor.temperature(), sensor.humidity(), sc.get_kg()
+    t, h, wa, wl = sensor.temperature(), sensor.humidity(), sc.get_avgkg(), sc.get_lpkg()
     print('T:' + str(t) + '*C')
     print('H:' + str(h) + '%')
-    print('W:' + str(w) + 'kg')
+    print('Wavg:' + str(wa) + 'kg')
+    print('Wlp:' + str(wl) + 'kg')
 
-    if all(isinstance(i, float) for i in [t, h, w]):   # Confirm values and send
+    if all(isinstance(i, float) for i in [t, h, wa, wl]):   # Confirm values and send
 
         station = network.WLAN(network.STA_IF)
         # connect to WiFi
@@ -87,12 +89,12 @@ while True:
             sys.exit()
 
         try:
-            thingspeak_publish(t, h, w)
+            thingspeak_publish(t, h, wa, wl)
         except:
             print('error while uploading to thingspeak')
 
         try:
-            hiveeyes_publish(t ,h, w)
+            hiveeyes_publish(t ,h, wa, wl)
         except:
             print('error while uploading to hiveeyes')
 

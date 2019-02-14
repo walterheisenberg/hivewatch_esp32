@@ -4,13 +4,9 @@ per Button in den AP Modus zum einstellen
 per webIf variablen (messungsinterval) einstellen
 ^^^ Kann jemand die Website dafür machen?
 
-cpu frequenz einstellen
-^^^ ich warte auf das neue daily-build von micropython, da sollte es möglich sein
-
 PinBelegung als Variable/Config (Python vs JSON)
 
 Kontrolle:
-    CPU frequenz nach deepsleep
     reicht 80MHz, vielleicht auch 20MHz?
     speichern der Messwerte auf SD und übermittlung alle 4 - 6 Stunden um Strom zu sparen
     Wie lange hält ein 1000mAh Akku am board

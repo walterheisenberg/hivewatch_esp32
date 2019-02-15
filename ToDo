@@ -8,6 +8,8 @@ PinBelegung als Variable/Config (Python vs JSON)
 
 Kontrolle:
     reicht 80MHz, vielleicht auch 20MHz?
+    20 MHz gehen noch nicht -> BugReport
     speichern der Messwerte auf SD und übermittlung alle 4 - 6 Stunden um Strom zu sparen
     Wie lange hält ein 1000mAh Akku am board
+    HX711 an 3,3V??? mit LiPo
 

@@ -27,7 +27,9 @@ def activate():
     global graphics
     graphics = gfx.GFX(oledWidth, oledHeight, oled.pixel)
 
-    # OLED schwarz
+    # OLED schwarz und wenig Kontrast
+    # oled.contrast(0) wenig <--> oled.contrast(255) max
+    oled.contrast(0)
     oled.fill(0)
     oled.show()
 

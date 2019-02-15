@@ -4,12 +4,10 @@ import i2cOLED
 import displayImage
 from ntptime import settime
 import machine
+from cfg_wlan import *
 
-def connect():
+def connect(useOled=True):
     i2cOLED.activate()
-
-    wlan_ssid = "WLAN-SSID"
-    wlan_password = "WLAN-Passwort"
  
     station = network.WLAN(network.STA_IF)
  
@@ -21,8 +19,12 @@ def connect():
         print()
         return
 
-    # display WiFi image
-    displayImage.display_wifi()
+    # display WiFi image or blank screen
+    if useOled:
+        displayImage.display_image("WiFi_Logo.pbm")
+    else:
+        i2cOLED.oled.fill(0)
+        i2cOLED.oled.show()
 
     station.active(True)
     station.connect(wlan_ssid, wlan_password)
@@ -36,11 +38,12 @@ def connect():
     connectionInfo = station.ifconfig()
     print("IP: ", connectionInfo[0])
     print()
-    i2cOLED.oled.text("WLAN",60,0)
-    i2cOLED.oled.text("Connection", 60, 10)
-    i2cOLED.oled.text("successful!", 60, 20)
-    i2cOLED.oled.text(connectionInfo[0], 0, 50)
-    i2cOLED.oled.show()
+    if useOled:
+        i2cOLED.oled.text("WLAN",60,0)
+        i2cOLED.oled.text("Connection", 60, 10)
+        i2cOLED.oled.text("successful!", 60, 20)
+        i2cOLED.oled.text(connectionInfo[0], 0, 50)
+        i2cOLED.oled.show()
 
     # set UTC time
     # for testing: try with try/exception because of some errors
@@ -52,7 +55,7 @@ def connect():
         except:
             print("There was an error, setting the time")
 
-def disconnect():
+def disconnect(useOled=True):
     i2cOLED.activate()
     station = network.WLAN()
  
@@ -61,7 +64,11 @@ def disconnect():
         w.disconnect
         print("disconnect WLAN")
         print()
-        i2cOLED.oled.text("WLAN",0,0)
-        i2cOLED.oled.text("disconnected", 00, 10)
-        i2cOLED.oled.show()
+        if useOled:
+            i2cOLED.oled.text("WLAN",0,0)
+            i2cOLED.oled.text("disconnected", 00, 10)
+            i2cOLED.oled.show()
+        else:
+            i2cOLED.oled.fill(0)
+            i2cOLED.oled.show()
         return

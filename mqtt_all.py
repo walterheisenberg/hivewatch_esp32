@@ -32,18 +32,18 @@ publishPeriodInSec = 355 # 360s minus 5s sleep time, so almost 5 min
 # and you don't have enough time if something goes wrong
 sleep(4)
 
-def hiveeyes_publish(t, h, w):
+def hiveeyes_publish(t, h, wa, wl):
     measurement = {
                 'temperature0': t,
                 'humidity': h,
                 'weightavg': wa,
-                'weightlp': wl,
+                'weightlp': wl
             }
 
     # Serialize data as JSON
     hiveeyes_payload = ujson.dumps(measurement)
     # Publish to MQTT
-    client_hiveeyes = MQTTClient(client_id=MqttClientID, server=hiveeyesUrl, user='Your@Mail.adr', password='YourPassword', ssl=False)
+    client_hiveeyes = MQTTClient(client_id=MqttClientID, server=hiveeyesUrl, user='YourUserIDHere', password='YourPasswordHere', ssl=False)
     client_hiveeyes.connect()
     client_hiveeyes.publish(mqtt_topic_hiveeyes, hiveeyes_payload)
     client_hiveeyes.disconnect()
@@ -71,7 +71,15 @@ def thingspeak_publish(t, h, wa, wl):
 
 while True:
     sensor.measure()   # Poll sensor
-    t, h, wa, wl = sensor.temperature(), sensor.humidity(), sc.get_avgkg(), sc.get_lpkg()
+    if not sc.is_ready():
+        sc.power_up()
+
+    # measurement of all sensors
+    t, h, wa, wl = sensor.temperature(), sensor.humidity(), sc.get_avgkg(10), sc.get_lpkg()
+
+    # powerdown scale
+    sc.power_down()
+
     print('T:' + str(t) + '*C')
     print('H:' + str(h) + '%')
     print('Wavg:' + str(wa) + 'kg')
@@ -81,7 +89,7 @@ while True:
 
         station = network.WLAN(network.STA_IF)
         # connect to WiFi
-        connectWiFi.connect(useOled=True)
+        connectWiFi.connect(useOled=False)
 
         if not station.isconnected():
             print("WLAN not connected!")
@@ -98,7 +106,7 @@ while True:
         except:
             print('error while uploading to hiveeyes')
 
-        connectWiFi.disconnect()
+        connectWiFi.disconnect(useOled=False)
 
         # 1 sec sleep to display "WLAN disconnected" on OLED
         print('going to sleep...')
@@ -109,8 +117,8 @@ while True:
         gc.mem_free()
 
         print('going to deepsleep...')
-        #machine.deepsleep(publishPeriodInSec * 1000) # real use
-        sleep(15) # testing
+        machine.deepsleep(publishPeriodInSec * 1000) # real use
+        #sleep(15) # testing
 
     else:
         print('Invalid reading ... tryins again in 5s ...')

@@ -15,6 +15,6 @@ if not machine.reset_cause() == machine.DEEPSLEEP_RESET:
 # connect to WiFi - is done later in mqtt_all
 #connectWiFi.connect()
 
-#import mqtt_all
+import mqtt_all
 
 

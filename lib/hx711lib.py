@@ -39,10 +39,14 @@ class HX711:
         elif gain is 32:
             self.GAIN = 2
 
-        self.read()
-        self.filtered = self.read()
+        sum = 0
+        for i in range(3):
+            sum += self.read()
+        self.filtered = sum / 3
+        #self.read()
+        #self.filtered = self.read()
         print('Gain & initial value set')
-    
+
     def is_ready(self):
         return self.pOUT() == 0
 
@@ -75,8 +79,22 @@ class HX711:
             sum += self.read()
         return sum / times
 
+    # get median value
+    def read_median(self, times=8):
+        lst = []
+        for i in range(times):
+            lst.append(self.read_average())
+        sortedLst = sorted(lst)
+        #print(sortedLst)
+        lstLen = len(lst)
+        index = (lstLen - 1) // 2
+
+        if (lstLen % 2):
+            return sortedLst[index]
+        else:
+            return (sortedLst[index] + sortedLst[index + 1])/2.0
+
     def read_lowpass(self):
-        print('self.filtered before: ' + str(self.filtered))
         self.filtered += self.time_constant * (self.read() - self.filtered)
         return self.filtered
 
@@ -87,11 +105,14 @@ class HX711:
         return self.get_value(times) / self.SCALE
 
     def get_avgkg(self, times=3):
-        return round( self.get_value(times) / self.SCALE / 1000 ,2 )
+        return round( self.get_value(times) / self.SCALE / 1000 ,3 )
 
     def get_lpkg(self):
         self.filtered += self.time_constant * (self.read() - self.filtered)
-        return round( (self.filtered  - self.OFFSET)  / self.SCALE / 1000 ,2 )
+        return round( (self.filtered  - self.OFFSET)  / self.SCALE / 1000 ,3 )
+
+    def get_medkg(self):
+        return round( (self.read_median() - self.OFFSET)  / self.SCALE / 1000 ,3 )
 
     def tare(self, times=15):
         sum = self.read_average(times)
@@ -107,7 +128,8 @@ class HX711:
         if offset is None:
             return self.OFFSET
         self.OFFSET = offset
-
+    
+    # time constant: lower value = more smooth lowpass filtering
     def set_time_constant(self, time_constant = None):
         if time_constant is None:
             return self.time_constant

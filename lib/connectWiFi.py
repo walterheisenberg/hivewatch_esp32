@@ -61,7 +61,7 @@ def disconnect(useOled=True):
  
     if station.isconnected() == True:
         w = network.WLAN()
-        w.disconnect
+        w.disconnect()
         print("disconnect WLAN")
         print()
         if useOled:

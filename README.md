@@ -1,6 +1,13 @@
 # hivewatch_esp32
 
-This is the first release of my Micropython implementaion to push sensor data to Thingspeak and hiveeyes
+This is the my Micropython implementaion to push sensor data to [Thingspeak](https://thingspeak.com/) and [Hiveeyes](https://hiveeyes.org/)
+
+Sensors:
+* HX711 for the scale
+* DHT22 for temperature and humidity
+
+I don't need any broodsensors or microphones inside the beehive. If anyone wants to add it, please
+feel free to do so.
 
 It is my beginning to code in python, so please excuse weird code ;)
 Improvements and tipps are welcome!
